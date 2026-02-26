@@ -12,60 +12,79 @@
     --muted:#6b6b6b;
     --button-bg:#ff6b9a;
     --button-text:#fff;
-    --gap:18px;
+    --gap:20px;
+    --card-padding:28px;
   }
-  /* Mobile-first layout */
+
+  /* page */
   html,body{height:100%;margin:0;background:linear-gradient(180deg,#fff6f8 0%, #fff 60%);font-family:system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;}
-  .app{min-height:100%;display:flex;align-items:center;justify-content:center;padding:36px;box-sizing:border-box;}
-   .card{
-    max-height: calc(100vh - 72px); /* keep card within viewport */
-    overflow: auto;
-    -webkit-overflow-scrolling: touch;
-    padding-bottom: 18px; /* space for buttons when scrolled */
+  .app{min-height:100%;display:flex;align-items:center;justify-content:center;padding:20px;box-sizing:border-box;}
+
+  /* card - no scrolling, fixed layout that fits viewport */
+  .card{
+    width:100%;
+    max-width:460px;
+    background:var(--card);
+    border-radius:20px;
+    box-shadow:0 8px 30px rgba(0,0,0,0.08);
+    padding:var(--card-padding);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    position:relative;
+    overflow:visible;
+    height: calc(100vh - 40px); /* occupy most of viewport */
+    box-sizing:border-box;
   }
-   .scene{ transform:translateY(6px) scale(.995); }
-  .scene.active{display:flex}
-  .hero-img{
-    height: auto;
-    max-height: 40vh; /* prevent large images from pushing buttons off-screen */
-    width: 88%;
-    object-fit: cover;
-  }
-  .title{font-size:20px;font-weight:700;color:#2b2b2b;margin-top:8px;line-height:1.2}
-  .subtitle{color:var(--muted);font-size:15px;margin-top:6px}
-   .button-row{
-    margin-top: 12px;
-    margin-bottom: 12px;
-    flex-shrink: 0; /* keep buttons visible area stable */
-  }
+
+  /* scene layout: text -> image -> buttons, spaced generously */
+  .scene{width:100%;display:none;flex-direction:column;align-items:center;gap:var(--gap);text-align:center;padding:6px 6px;box-sizing:border-box}
+  .scene.active{display:flex;justify-content:flex-start}
+  .scene-inner{display:flex;flex-direction:column;align-items:center;width:100%;height:100%;}
+
+  .top-area{margin-top:6px}
+  .title{font-size:22px;font-weight:800;color:#2b2b2b;line-height:1.12;margin:8px 6px;}
+  .subtitle{color:var(--muted);font-size:15px;margin-top:4px;}
+
+  /* image centered and constrained so it won't push buttons off */
+  .hero-img{width:88%;max-width:380px;height:auto;max-height:45vh;border-radius:14px;background:#f2f2f2;object-fit:cover;display:block;margin:6px auto;box-shadow:0 6px 18px rgba(0,0,0,0.06)}
+
+  /* buttons area anchored at bottom of card visually */
+  .button-row{display:flex;gap:12px;margin-top:auto;padding-bottom:6px;justify-content:center;width:100%}
   .btn{flex:1 1 140px;min-width:120px;background:var(--button-bg);color:var(--button-text);padding:14px 18px;border-radius:12px;border:none;font-size:17px;font-weight:700;box-shadow:0 6px 14px rgba(255,107,154,0.22);transition:transform .12s ease,box-shadow .12s ease;touch-action:manipulation}
   .btn.secondary{background:#fff;border:2px solid #eee;color:#333;box-shadow:none}
   .btn:active{transform:scale(.96)}
-  /* Floating hearts / sparkles for screen 1 */
-  .float-layer{position:absolute;inset:0;pointer-events:none}
-  .heart{position:absolute;width:22px;height:22px;background:conic-gradient(from 180deg at 50% 50%, #ff789e, #ffd1dc);clip-path:path('M10 3C7 0 0 1 0 6c0 6 10 11 10 11s10-5 10-11c0-5-7-6-10-3z');opacity:.95;border-radius:50%;transform-origin:center center}
-  /* simple hearts fallback using border-radius shapes */
+
+  /* float hearts layer */
+  .float-layer{position:absolute;inset:0;pointer-events:none;z-index:2}
   .float-heart{position:absolute;width:18px;height:18px;background:var(--accent);transform:rotate(45deg);border-radius:3px 3px 0 0;opacity:.9;filter:drop-shadow(0 4px 10px rgba(255,107,154,.18));}
   .float-heart::before,.float-heart::after{content:"";position:absolute;background:var(--accent);width:18px;height:18px;border-radius:50%}
   .float-heart::before{left:-9px;top:0}
   .float-heart::after{top:-9px;left:0}
   @keyframes floatUp{0%{transform:translateY(12px) scale(.95);opacity:0}20%{opacity:1}100%{transform:translateY(-140px) scale(1.05);opacity:0}}
-  /* small wobble for screen 1B text */
+
+  /* wobble */
   .wobble{display:inline-block;animation:wobble 1.6s ease-in-out infinite}
   @keyframes wobble{0%{transform:translateY(0)}50%{transform:translateY(-6px)}100%{transform:translateY(0)}}
-  /* pop/slide transitions between scenes */
-  .scene{opacity:0;transform:translateY(10px) scale(.99);transition:opacity .28s ease,transform .28s ease}
+
+  /* transitions */
+  .scene{opacity:0;transform:translateY(6px) scale(.995);transition:opacity .28s ease,transform .28s ease}
   .scene.active{opacity:1;transform:none}
-  /* confetti simple */
+
+  /* confetti/tears/vignette */
   .confetti-piece{position:absolute;width:8px;height:14px;border-radius:2px;opacity:0;transform:translateY(-20px) rotate(0deg);pointer-events:none}
-  /* dramatic vignette for Screen 4 */
   .vignette{position:absolute;inset:0;background:radial-gradient(ellipse at center, rgba(0,0,0,0) 50%, rgba(0,0,0,0.45) 100%);opacity:0;transition:opacity .6s;pointer-events:none}
   .vignette.show{opacity:1}
-  /* teardrops */
   .tear{position:absolute;width:6px;height:10px;background:rgba(0,120,200,.14);border-radius:3px;filter:blur(.2px);opacity:0;animation:fall 2s linear infinite}
   @keyframes fall{0%{transform:translateY(-10px);opacity:1}100%{transform:translateY(220px);opacity:0}}
+
   /* responsive tweaks */
-  @media(min-width:520px){ .card{padding:36px} .hero-img{height:240px} .title{font-size:22px} .btn{font-size:18px} }
+  @media(min-width:520px){
+    .card{padding:36px;height: calc(100vh - 52px)}
+    .title{font-size:24px}
+    .hero-img{max-height:40vh}
+    .btn{font-size:18px}
+  }
 </style>
 </head>
 <body>
@@ -73,78 +92,100 @@
   <div class="card" role="main" aria-live="polite">
     <div class="float-layer" id="floatLayer"></div>
 
-    <!-- Screen 1: Tea question -->
+    <!-- Screen 1: question text FIRST, then image, then buttons -->
     <section id="s1" class="scene active" data-screen="1">
-      <img class="hero-img" id="img-s1" alt="asset_tea_question" src="tea.webp">
-      <div class="title">Bubumaa...Tea bekaa??</div>
-      <div class="subtitle">☕️☕️☕️☕️</div>
-      <div class="button-row">
-        <button class="btn" data-action="yes" data-next="2" id="s1-yes">Yes</button>
-        <button class="btn secondary dodge" data-action="no" id="s1-no" aria-label="No">No</button>
+      <div class="scene-inner">
+        <div class="top-area">
+          <div class="title">Bubumaa... Tea bekaa??</div>
+          <div class="subtitle">A warm cup awaits ☕️</div>
+        </div>
+        <img class="hero-img" id="img-s1" alt="asset_tea_question" src="tea.webp">
+        <div class="button-row">
+          <button class="btn" data-action="yes" id="s1-yes">Yes</button>
+          <button class="btn secondary dodge" data-action="no" id="s1-no" aria-label="No">No</button>
+        </div>
       </div>
     </section>
 
-    <!-- Screen 1B: Consider again (sad) -->
+    <!-- Screen 1B: Consider again -->
     <section id="s1b" class="scene" data-screen="1B">
-      <img class="hero-img" id="img-s1b" alt="asset_consider_again_sad" src="puppy.webp">
-      <div class="title wobble">nijvaglu bedva...?</div>
-      <div class="button-row">
-        <button class="btn" data-action="yes" data-next="2" id="s1b-yes">Yes</button>
-        <button class="btn secondary dodge" data-action="no" id="s1b-no">No</button>
+      <div class="scene-inner">
+        <div class="top-area">
+          <div class="title wobble">Oh… please consider again?</div>
+          <div class="subtitle">Pretty please 🥺</div>
+        </div>
+        <img class="hero-img" id="img-s1b" alt="asset_consider_again_sad" src="puppy.webp">
+        <div class="button-row">
+          <button class="btn" data-action="yes" id="s1b-yes">Yes</button>
+          <button class="btn secondary dodge" data-action="no" id="s1b-no">No</button>
+        </div>
       </div>
     </section>
 
-    <!-- Screen 2: Great + request to make it -->
+    <!-- Screen 2 -->
     <section id="s2" class="scene" data-screen="2">
-      <img class="hero-img" id="img-s2" alt="asset_make_tea_request" src="asset_make_tea_request.gif">
-      <div class="title">Great!</div>
-      <div class="subtitle">Can you please go make it?</div>
-      <div class="button-row">
-        <button class="btn" data-action="yes" data-next="3" id="s2-yes">Yes</button>
-        <button class="btn secondary" data-action="no" data-next="3b" id="s2-no">No</button>
+      <div class="scene-inner">
+        <div class="top-area">
+          <div class="title">Great!</div>
+          <div class="subtitle">Can you please go make it?</div>
+        </div>
+        <img class="hero-img" id="img-s2" alt="asset_make_tea_request" src="asset_make_tea_request.gif">
+        <div class="button-row">
+          <button class="btn" data-action="yes" id="s2-yes">Yes</button>
+          <button class="btn secondary" data-action="no" id="s2-no">No</button>
+        </div>
       </div>
     </section>
 
-    <!-- Screen 3: Celebration / Thanks -->
+    <!-- Screen 3 -->
     <section id="s3" class="scene" data-screen="3">
-      <img class="hero-img" id="img-s3" alt="asset_thanks_celebrate" src="asset_thanks_celebrate.gif">
-      <div class="title">Thanks!</div>
-      <div class="button-row">
-        <button class="btn" id="s3-replay">Replay</button>
+      <div class="scene-inner">
+        <div class="top-area">
+          <div class="title">Thanks!</div>
+        </div>
+        <img class="hero-img" id="img-s3" alt="asset_thanks_celebrate" src="asset_thanks_celebrate.gif">
+        <div class="button-row">
+          <button class="btn" id="s3-replay">Replay</button>
+        </div>
       </div>
     </section>
 
-    <!-- Screen 3B: Fine, I'll prepare (sad) -->
+    <!-- Screen 3B -->
     <section id="s3b" class="scene" data-screen="3B">
-      <img class="hero-img" id="img-s3b" alt="asset_fine_ill_prepare_sad" src="asset_fine_ill_prepare_sad.gif">
-      <div class="title">Fine… I’ll go prepare it.</div>
-      <div class="button-row">
-        <button class="btn" id="s3b-restart">Restart</button>
+      <div class="scene-inner">
+        <div class="top-area">
+          <div class="title">Fine… I’ll go prepare it.</div>
+        </div>
+        <img class="hero-img" id="img-s3b" alt="asset_fine_ill_prepare_sad" src="asset_fine_ill_prepare_sad.gif">
+        <div class="button-row">
+          <button class="btn" id="s3b-restart">Restart</button>
+        </div>
       </div>
     </section>
 
-    <!-- Screen 4: Drink alone forever -->
+    <!-- Screen 4 -->
     <section id="s4" class="scene" data-screen="4">
-      <img class="hero-img" id="img-s4" alt="asset_drink_alone_forever_sad" src="asset_drink_alone_forever_sad.gif">
-      <div class="title" style="white-space:pre-line">Fine… I’ll drink tea alone…\nforever!</div>
-      <div class="button-row">
-        <button class="btn" id="s4-mind">I changed my mind</button>
-        <button class="btn secondary" id="s4-restart">Restart</button>
+      <div class="scene-inner">
+        <div class="top-area">
+          <div class="title" style="white-space:pre-line">Fine… I’ll drink tea alone…\nforever!</div>
+        </div>
+        <img class="hero-img" id="img-s4" alt="asset_drink_alone_forever_sad" src="asset_drink_alone_forever_sad.gif">
+        <div class="button-row">
+          <button class="btn" id="s4-mind">I changed my mind</button>
+          <button class="btn secondary" id="s4-restart">Restart</button>
+        </div>
+        <div class="vignette" id="vignette"></div>
       </div>
-      <div class="vignette" id="vignette"></div>
     </section>
 
-    <!-- confetti container -->
     <div id="confetti"></div>
   </div>
 </div>
 
-<!-- Optional sounds (replace src with your assets) -->
 <audio id="sound-yes" src="asset_yes_chime.mp3" preload="auto"></audio>
 <audio id="sound-no" src="asset_no_trombone.mp3" preload="auto"></audio>
 
 <script>
-  // Core navigation and effects
   (function(){
     const screens = {
       '1': document.getElementById('s1'),
@@ -154,253 +195,129 @@
       '3B': document.getElementById('s3b'),
       '4': document.getElementById('s4')
     };
+    const sounds = { yes: document.getElementById('sound-yes'), no: document.getElementById('sound-no') };
 
-    const sounds = {
-      yes: document.getElementById('sound-yes'),
-      no: document.getElementById('sound-no')
-    };
-
-    // Utility: go to a screen id
-     function show(screenId){
-    const card = document.querySelector('.card');
-    Object.values(screens).forEach(s => s.classList.remove('active'));
-    const s = screens[String(screenId)];
-    if(!s) return;
-    s.classList.add('active');
-    // ensure card scrolls so the button row is visible on small screens
-    const btnRow = s.querySelector('.button-row');
-    if(btnRow){
-      // allow the card container to smoothly bring the buttons into view
-      btnRow.scrollIntoView({ behavior: 'smooth', block: 'end', inline: 'nearest' });
-    } else {
-      // fallback scroll to top of card so content is visible
-      card.scrollTo({ top: 0, behavior: 'smooth' });
+    function show(screenId){
+      Object.values(screens).forEach(s => s.classList.remove('active'));
+      const s = screens[String(screenId)];
+      if(!s) return;
+      s.classList.add('active');
+      handleEnterScreen(screenId);
     }
-    handleEnterScreen(screenId);
-  }
-    // Micro interactions: vibration and sound
+
     function feedback(type){
       try{ if(navigator.vibrate) navigator.vibrate(type==='yes'?20:40) }catch(e){}
       const audio = type==='yes'?sounds.yes:sounds.no;
-      if(audio && audio.play) {
-        audio.currentTime = 0;
-        audio.play().catch(()=>{}); // ignore play errors on mobile autoplay restrictions
-      }
+      if(audio && audio.play){ audio.currentTime = 0; audio.play().catch(()=>{}); }
     }
 
-    // Confetti simple burst for thanks screen
     function confettiBurst(container, count=18){
-      const c = document.getElementById('confetti');
-      c.innerHTML='';
+      const c = document.getElementById('confetti'); c.innerHTML='';
       const colors = ['#ff6b9a','#ffd166','#9ad0ff','#b0ffb3','#f7a1ff'];
       for(let i=0;i<count;i++){
-        const el = document.createElement('div');
-        el.className='confetti-piece';
+        const el = document.createElement('div'); el.className='confetti-piece';
         el.style.background = colors[i%colors.length];
-        el.style.left = (30 + Math.random()*60) + '%';
-        el.style.top = '15%';
-        el.style.opacity = 1;
-        el.style.transform = `translateY(0) rotate(${Math.random()*360}deg)`;
-        document.getElementById('confetti').appendChild(el);
-        // animate via JS for varied paths
+        el.style.left = (20 + Math.random()*60) + '%';
+        el.style.top = '12%';
+        c.appendChild(el);
         (function(e){
           const dx = (Math.random()*160-80);
           const dy = 220 + Math.random()*120;
           const dur = 900 + Math.random()*900;
-          e.animate([
-            {transform:`translateY(0) rotate(0deg)`, opacity:1},
-            {transform:`translate(${dx}px, ${dy}px) rotate(${Math.random()*720}deg)`, opacity:0}
-          ],{duration:dur, easing:'cubic-bezier(.2,.8,.2,1)',fill:'forwards'});
+          e.animate([{transform:`translateY(0) rotate(0deg)`, opacity:1},{transform:`translate(${dx}px, ${dy}px) rotate(${Math.random()*720}deg)`, opacity:0}],{duration:dur, easing:'cubic-bezier(.2,.8,.2,1)',fill:'forwards'});
         })(el);
       }
-      // clear after animation
       setTimeout(()=>{ c.innerHTML=''; },1800);
     }
 
-    // Enter screen effects
     function handleEnterScreen(id){
-      // cleanup common transforms
       document.getElementById('vignette').classList.remove('show');
-
-      if(id==='1'){
-        spawnHearts(8);
-      } else {
-        clearHearts();
-      }
-      if(id==='1B'){
-        spawnHearts(5,true);
-      }
-      if(id==='3'){
-        confettiBurst(document.getElementById('confetti'));
-        feedback('yes');
-      }
-      if(id==='3B'){
-        // subtle rain cloud: apply tiny animation by lowering brightness
-        feedback('no');
-      }
-      if(id==='4'){
-        document.getElementById('vignette').classList.add('show');
-        // spawn slow teardrops
-        spawnTears(6);
-        feedback('no');
-      } else {
-        removeTears();
-      }
+      if(id==='1'){ spawnHearts(8); } else { clearHearts(); }
+      if(id==='1B'){ spawnHearts(5,true); }
+      if(id==='3'){ confettiBurst(document.getElementById('confetti')); feedback('yes'); }
+      if(id==='3B'){ feedback('no'); }
+      if(id==='4'){ document.getElementById('vignette').classList.add('show'); spawnTears(6); feedback('no'); } else { removeTears(); }
     }
 
-    // Spawn floating hearts inside floatLayer
-    const floatLayer = document.getElementById('floatLayer');
-    let heartsTimer=null;
+    const floatLayer = document.getElementById('floatLayer'); let heartsTimer=null;
     function spawnHearts(n=6, slow=false){
       clearHearts();
       for(let i=0;i<n;i++){
-        const el = document.createElement('div');
-        el.className='float-heart';
-        const left = Math.random()*85;
-        const top = 60 + Math.random()*20;
-        el.style.left = left + '%';
-        el.style.top = top + '%';
+        const el=document.createElement('div'); el.className='float-heart';
+        el.style.left = (10 + Math.random()*80) + '%';
+        el.style.top = (55 + Math.random()*30) + '%';
         el.style.opacity = (0.6 + Math.random()*0.4);
         const delay = Math.random()*800;
         const duration = (2000 + Math.random()*1600) * (slow?1.6:1);
         el.style.animation = `floatUp ${duration}ms ease-in ${delay}ms both`;
         floatLayer.appendChild(el);
       }
-      // keep a gentle repeat to refresh
-      heartsTimer = setInterval(()=>{ spawnHearts(n, slow); }, 2400 * (slow?2:1));
+      heartsTimer = setInterval(()=>{ spawnHearts(n, slow); }, 2800 * (slow?1.8:1));
     }
-    function clearHearts(){
-      clearInterval(heartsTimer);
-      heartsTimer = null;
-      floatLayer.innerHTML = '';
-    }
+    function clearHearts(){ clearInterval(heartsTimer); heartsTimer = null; floatLayer.innerHTML = ''; }
 
-    // Teardrops
-    let tearTimer=null;
     function spawnTears(n=5){
       removeTears();
       const card = document.querySelector('.card');
       for(let i=0;i<n;i++){
         const t = document.createElement('div');
         t.className='tear';
-        t.style.left = (20 + Math.random()*60) + '%';
-        t.style.top = (10 + Math.random()*40) + '%';
+        t.style.left = (15 + Math.random()*70) + '%';
+        t.style.top = (8 + Math.random()*30) + '%';
         t.style.animationDelay = (Math.random()*1200) + 'ms';
         t.style.animationDuration = (1800 + Math.random()*1200) + 'ms';
         card.appendChild(t);
       }
     }
-    function removeTears(){
-      const tears = document.querySelectorAll('.tear');
-      tears.forEach(t=>t.remove());
-    }
+    function removeTears(){ document.querySelectorAll('.tear').forEach(t=>t.remove()); }
 
-    // Dodge behavior for No buttons on screen 1 and 1B only
     function makeDodge(btn){
       const parent = btn.parentElement;
       let lastMove=0;
-      function attemptDodge(e){
-        // Only dodge on screens 1 or 1B
+      function attemptDodge(){
         const active = document.querySelector('.scene.active');
         if(!active || (active.id !== 's1' && active.id !== 's1b')) return;
-        // limit frequency
         if(Date.now() - lastMove < 220) return;
         lastMove = Date.now();
-
         const rect = parent.getBoundingClientRect();
         const btnRect = btn.getBoundingClientRect();
-        // compute small random offset but keep it visible
-        const maxOffsetX = Math.min(100, rect.width - btnRect.width - 12);
-        const maxOffsetY = 12; // only small vertical move
+        const maxOffsetX = Math.min(96, Math.max(32, rect.width - btnRect.width - 12));
+        const maxOffsetY = 10;
         const dirX = (Math.random() > 0.5)?1:-1;
-        const offsetX = dirX * (30 + Math.random() * (maxOffsetX/1.2));
+        const offsetX = dirX * (22 + Math.random() * (maxOffsetX/1.6));
         const offsetY = (Math.random()-0.5) * maxOffsetY;
-        // apply transform temporarily
         btn.style.transition = 'transform .22s cubic-bezier(.2,.9,.2,1)';
         btn.style.transform = `translate(${offsetX}px, ${offsetY}px)`;
-        // restore after short time so it can dodge again
         setTimeout(()=>{ btn.style.transform=''; }, 520);
-        feedback('no'); // small "no" sound and vib
+        feedback('no');
       }
-
-      // mouseover for desktop, touchstart for touch devices
       btn.addEventListener('mouseenter', attemptDodge);
       btn.addEventListener('touchstart', attemptDodge, {passive:true});
     }
-
-    // Attach dodge to designated buttons
     document.querySelectorAll('.dodge').forEach(makeDodge);
 
-    // Route buttons handling
     document.addEventListener('click', function(e){
-      const btn = e.target.closest('button');
-      if(!btn) return;
-      const action = btn.dataset.action;
-      // handle explicit nexts
-      if(btn.id === 's1-yes' || btn.id === 's1b-yes'){
-        show(2);
-        feedback('yes');
-        return;
-      }
-      if(btn.id === 's1-no'){
-        // No on s1 -> go to 1B
-        show('1B');
-        feedback('no');
-        return;
-      }
-      if(btn.id === 's1b-no'){
-        // No on s1B -> go to Screen 4
-        show(4);
-        feedback('no');
-        return;
-      }
-      if(btn.id === 's2-yes'){
-        show(3);
-        feedback('yes');
-        return;
-      }
-      if(btn.id === 's2-no'){
-        show('3B');
-        feedback('no');
-        return;
-      }
-      if(btn.id === 's3-replay'){
-        show(1);
-        return;
-      }
-      if(btn.id === 's3b-restart' || btn.id === 's4-restart'){
-        show(1);
-        return;
-      }
-      if(btn.id === 's4-mind'){
-        show(2);
-        feedback('yes');
-        return;
-      }
+      const btn = e.target.closest('button'); if(!btn) return;
+      if(btn.id === 's1-yes' || btn.id === 's1b-yes'){ show(2); feedback('yes'); return; }
+      if(btn.id === 's1-no'){ show('1B'); feedback('no'); return; }
+      if(btn.id === 's1b-no'){ show(4); feedback('no'); return; }
+      if(btn.id === 's2-yes'){ show(3); feedback('yes'); return; }
+      if(btn.id === 's2-no'){ show('3B'); feedback('no'); return; }
+      if(btn.id === 's3-replay'){ show(1); return; }
+      if(btn.id === 's3b-restart' || btn.id === 's4-restart'){ show(1); return; }
+      if(btn.id === 's4-mind'){ show(2); feedback('yes'); return; }
     });
 
-    // Small hover/bounce for important buttons
     document.querySelectorAll('.btn').forEach(b=>{
       b.addEventListener('mouseover', ()=>{ b.style.transform='scale(1.03)'; });
       b.addEventListener('mouseout', ()=>{ b.style.transform=''; });
       b.addEventListener('touchstart', ()=>{ b.style.transform='scale(.98)'; setTimeout(()=>b.style.transform='',160); }, {passive:true});
     });
 
-    // Initialize
     show(1);
 
-    // Ensure buttons don't go off-screen on resize
-    window.addEventListener('resize', ()=>{ document.querySelectorAll('.dodge').forEach(btn=>btn.style.transition='none'); setTimeout(()=>document.querySelectorAll('.dodge').forEach(btn=>btn.style.transition='transform .22s cubic-bezier(.2,.9,.2,1)'),40) });
-
-    // Accessibility: keyboard allow simple navigation (Enter triggers focused button)
-    document.addEventListener('keydown', (e)=>{
-      if(e.key === 'Enter'){
-        const active = document.querySelector('.scene.active');
-        const firstBtn = active.querySelector('button');
-        if(firstBtn) firstBtn.click();
-      }
-    });
-
+    // keyboard accessibility
+    document.addEventListener('keydown', (e)=>{ if(e.key === 'Enter'){ const active = document.querySelector('.scene.active'); const firstBtn = active.querySelector('button'); if(firstBtn) firstBtn.click(); }});
   })();
 </script>
 </body>
