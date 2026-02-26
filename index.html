@@ -17,13 +17,27 @@
   /* Mobile-first layout */
   html,body{height:100%;margin:0;background:linear-gradient(180deg,#fff6f8 0%, #fff 60%);font-family:system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;}
   .app{min-height:100%;display:flex;align-items:center;justify-content:center;padding:36px;box-sizing:border-box;}
-  .card{width:100%;max-width:420px;background:var(--card);border-radius:20px;box-shadow:0 8px 30px rgba(0,0,0,0.08);padding:26px;display:flex;flex-direction:column;align-items:center;position:relative;overflow:hidden}
-  .scene{width:100%;text-align:center;display:none;gap:var(--gap);align-items:center}
+   .card{
+    max-height: calc(100vh - 72px); /* keep card within viewport */
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 18px; /* space for buttons when scrolled */
+  }
+   .scene{ transform:translateY(6px) scale(.995); }
   .scene.active{display:flex}
-  .hero-img{width:88%;max-width:320px;height:200px;background:#f2f2f2;border-radius:12px;object-fit:cover;display:block;margin:0 auto;box-shadow:0 6px 18px rgba(0,0,0,0.06)}
+  .hero-img{
+    height: auto;
+    max-height: 40vh; /* prevent large images from pushing buttons off-screen */
+    width: 88%;
+    object-fit: cover;
+  }
   .title{font-size:20px;font-weight:700;color:#2b2b2b;margin-top:8px;line-height:1.2}
   .subtitle{color:var(--muted);font-size:15px;margin-top:6px}
-  .button-row{display:flex;gap:12px;margin-top:18px;flex-wrap:wrap;justify-content:center;width:100%}
+   .button-row{
+    margin-top: 12px;
+    margin-bottom: 12px;
+    flex-shrink: 0; /* keep buttons visible area stable */
+  }
   .btn{flex:1 1 140px;min-width:120px;background:var(--button-bg);color:var(--button-text);padding:14px 18px;border-radius:12px;border:none;font-size:17px;font-weight:700;box-shadow:0 6px 14px rgba(255,107,154,0.22);transition:transform .12s ease,box-shadow .12s ease;touch-action:manipulation}
   .btn.secondary{background:#fff;border:2px solid #eee;color:#333;box-shadow:none}
   .btn:active{transform:scale(.96)}
@@ -147,14 +161,23 @@
     };
 
     // Utility: go to a screen id
-    function show(screenId){
-      Object.values(screens).forEach(s => s.classList.remove('active'));
-      const s = screens[String(screenId)];
-      if(!s) return;
-      s.classList.add('active');
-      handleEnterScreen(screenId);
+     function show(screenId){
+    const card = document.querySelector('.card');
+    Object.values(screens).forEach(s => s.classList.remove('active'));
+    const s = screens[String(screenId)];
+    if(!s) return;
+    s.classList.add('active');
+    // ensure card scrolls so the button row is visible on small screens
+    const btnRow = s.querySelector('.button-row');
+    if(btnRow){
+      // allow the card container to smoothly bring the buttons into view
+      btnRow.scrollIntoView({ behavior: 'smooth', block: 'end', inline: 'nearest' });
+    } else {
+      // fallback scroll to top of card so content is visible
+      card.scrollTo({ top: 0, behavior: 'smooth' });
     }
-
+    handleEnterScreen(screenId);
+  }
     // Micro interactions: vibration and sound
     function feedback(type){
       try{ if(navigator.vibrate) navigator.vibrate(type==='yes'?20:40) }catch(e){}
